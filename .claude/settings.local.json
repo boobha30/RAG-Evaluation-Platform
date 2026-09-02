@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Library/Frameworks/Python.framework/Versions/**)",
+      "Bash(command -v pyenv)",
+      "Bash(pyenv versions *)",
+      "Bash(command -v python3.11 python3.12 python3.10)",
+      "Bash(command -v brew)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(/opt/homebrew/bin/python3.10 --version)"
+    ]
+  }
+}

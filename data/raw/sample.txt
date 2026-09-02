@@ -1,0 +1,11 @@
+Retrieval-Augmented Generation, or RAG, is a technique that combines information retrieval with text generation. Instead of relying solely on knowledge baked into a language model's weights, RAG systems fetch relevant documents from an external knowledge base at query time. This allows the model to ground its answers in up-to-date or domain-specific information that it was never trained on.
+
+A typical RAG pipeline has three main stages. First, documents are ingested and split into smaller chunks, since embedding models and language models both have limited context windows. Semantic chunking groups sentences together based on how similar their meaning is, rather than using a fixed character count, which tends to keep related ideas in the same chunk.
+
+Second, each chunk is converted into a vector embedding using a model such as Sentence-BERT or OpenAI's embedding API. These embeddings are stored in a vector index, such as FAISS, which supports fast nearest-neighbor search over high-dimensional vectors.
+
+Third, when a user submits a query, the query is embedded using the same model, and the vector index returns the most similar chunks. These chunks are inserted into a prompt along with the original question, and a large language model generates a final answer grounded in the retrieved context.
+
+Evaluating a RAG system requires looking at both retrieval quality and generation quality. Retrieval metrics include precision and recall of the retrieved chunks against a set of relevant documents. Generation metrics include faithfulness, which measures whether the answer is actually supported by the retrieved context, and relevance, which measures whether the answer addresses the user's question.
+
+FAISS, developed by Meta AI, supports several index types. IndexFlatIP performs an exact search using inner product, which is equivalent to cosine similarity when vectors are normalized. Larger deployments often use approximate indexes like IVF or HNSW to trade a small amount of accuracy for much faster search over millions of vectors.

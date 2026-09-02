@@ -1,0 +1,9 @@
+# Vector Search and FAISS
+
+Dense retrieval represents each chunk of text as a vector produced by an embedding model, then finds the chunks whose vectors are closest to the query's vector. Closeness is usually measured with cosine similarity or inner product; when embeddings are normalized to unit length, cosine similarity and inner product rank results identically.
+
+FAISS (Facebook AI Similarity Search) is a library for efficient similarity search over large collections of vectors. The simplest FAISS index type, IndexFlatIP, performs an exact brute-force inner-product search: it compares the query vector against every stored vector and returns the top matches. This is accurate but scales linearly with the number of vectors, so it is best suited to small or medium collections (up to a few million vectors) where exactness matters more than raw speed.
+
+For larger collections, FAISS offers approximate nearest neighbor indexes such as IVF (inverted file, which clusters vectors and only searches the most relevant clusters) and HNSW (hierarchical navigable small world graphs, which build a graph structure for fast approximate traversal). These trade a small amount of recall for a large speedup, which matters once a corpus grows past tens of millions of vectors.
+
+A key property of dense retrieval is that it captures semantic similarity rather than exact word overlap: a query about "canine companions" can retrieve a chunk about "dogs" even though the words differ, because the embedding model has learned that the concepts are related. This is dense retrieval's biggest strength over keyword search, and also its biggest weakness, because it can miss chunks that share an exact rare term (a product code, an acronym, a proper noun) with the query but are not semantically close in the embedding space.

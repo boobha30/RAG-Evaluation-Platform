@@ -1,0 +1,11 @@
+# Faithfulness, Hallucination, and Answer Relevance
+
+A RAG system can fail in ways that are invisible to a simple pass/fail check on whether it returned an answer at all. Three of the most important quality dimensions to measure are faithfulness, hallucination, and answer relevance.
+
+Faithfulness measures whether the claims made in a generated answer are actually supported by the retrieved context. An answer can be fluent, confident, and entirely wrong if the language model draws on knowledge from its training data rather than the documents it was given, or if it subtly overstates what the context actually says. Faithfulness is typically scored either with an LLM-as-judge, where a separate model call is prompted to compare the answer's claims against the retrieved context and rate how well each claim is supported, or with a natural language inference (NLI) model, which classifies whether a piece of context entails, contradicts, or is neutral toward a claim.
+
+Hallucination is the sharper, binary cousin of low faithfulness: it means the answer contains a specific factual claim that cannot be traced back to any retrieved chunk at all. A hallucination rate is usually computed as the fraction of evaluated answers that contain at least one unsupported claim, and tracking it over time is one of the clearest signals of whether changes to a RAG pipeline (a new chunking strategy, a new retriever, a new prompt) are helping or hurting.
+
+Answer relevance measures a different failure mode: even if every claim in an answer is faithful to the retrieved context, the answer might not actually address the question that was asked, for example by answering a related but different question, or by padding the response with tangential information. A simple and effective proxy for answer relevance is the cosine similarity between the embedding of the original question and the embedding of the generated answer; a low similarity often indicates the answer drifted off-topic.
+
+Together, faithfulness, hallucination rate, and answer relevance give a much more complete picture of RAG quality than retrieval metrics alone, because a system can have excellent retrieval precision and recall and still generate answers that misrepresent or ignore the retrieved context.

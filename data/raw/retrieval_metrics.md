@@ -1,0 +1,11 @@
+# Retrieval Evaluation Metrics: Precision, Recall, and MRR
+
+To evaluate a retriever objectively, you need a labeled set of questions where each question is paired with the documents or chunks that are actually relevant to answering it. Against such a labeled set, three metrics are especially common.
+
+Precision at k measures, out of the top k results a retriever returned, what fraction were actually relevant. If a retriever returns 5 chunks and 3 of them are relevant, precision at 5 is 0.6. Precision at k penalizes a retriever for surfacing irrelevant chunks, which matters because a language model given noisy context is more likely to produce an unfaithful or diluted answer.
+
+Recall at k measures, out of all the relevant chunks that exist for a question, what fraction were captured within the top k results. If there are 4 relevant chunks total and the retriever's top 5 results contain 2 of them, recall at 5 is 0.5. Recall at k penalizes a retriever for missing relevant information entirely, which is often the more damaging failure mode in RAG, because a language model cannot generate a faithful answer using information it was never given.
+
+Mean Reciprocal Rank (MRR) focuses on how quickly the first relevant result appears. For a single question, the reciprocal rank is 1 divided by the rank position of the first relevant result (so 1.0 if the first result is relevant, 0.5 if the second result is the first relevant one, and so on). MRR is the average of this reciprocal rank across all questions in the evaluation set. MRR is especially useful when there is usually one clearly best answer chunk and you care about whether the retriever surfaces it near the top, rather than caring about capturing every relevant chunk.
+
+These three metrics are complementary rather than redundant: a retriever tuned purely for precision might return very few, highly confident results and miss relevant chunks (hurting recall), while a retriever tuned purely for recall might return many chunks, diluting precision. Evaluating all three together, on a consistent labeled question set, is what lets you compare retrieval configurations (for example, dense-only versus hybrid dense-plus-keyword retrieval) and know whether a change actually helped.

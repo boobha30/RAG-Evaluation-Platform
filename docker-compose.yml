@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag
+      POSTGRES_DB: rag_eval
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag -d rag_eval"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      # For a free local model via Ollama instead of OpenAI: set
+      # GENERATION_MODEL/JUDGE_MODEL and OPENAI_BASE_URL in your shell before
+      # `docker compose up`, e.g. OPENAI_BASE_URL=http://host.docker.internal:11434/v1
+      # (Ollama runs on the host, not in this compose file — `localhost`
+      # inside the container means the container itself, not your Mac).
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      GENERATION_MODEL: ${GENERATION_MODEL:-gpt-4o-mini}
+      JUDGE_MODEL: ${JUDGE_MODEL:-gpt-4o-mini}
+      DATABASE_URL: postgresql+psycopg2://rag:rag@postgres:5432/rag_eval
+      USE_HYBRID: "true"
+      USE_RERANKER: "true"
+      EVALUATE_LIVE_QUERIES: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # index is baked into the image at build time; mount it if you want to
+      # rebuild without rebuilding the image, e.g. `docker compose exec
+      # backend python scripts/build_index.py`
+      - index_data:/app/data/index
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  index_data:

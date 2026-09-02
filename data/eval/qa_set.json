@@ -1,0 +1,164 @@
+[
+  {
+    "id": 1,
+    "question": "What is Retrieval-Augmented Generation (RAG)?",
+    "expected_answer": "RAG is a technique that combines information retrieval with text generation, fetching relevant documents from an external knowledge base at query time so the model can ground its answers in information beyond its training data.",
+    "relevant_sources": ["sample.txt"]
+  },
+  {
+    "id": 2,
+    "question": "What are the three main stages of a typical RAG pipeline?",
+    "expected_answer": "Document ingestion and chunking, embedding each chunk into a vector and storing it in a vector index, and retrieving the most similar chunks at query time to generate a grounded answer.",
+    "relevant_sources": ["sample.txt"]
+  },
+  {
+    "id": 3,
+    "question": "Why do RAG pipelines split documents into smaller chunks?",
+    "expected_answer": "Because embedding models and language models both have limited context windows, so documents must be split into smaller pieces before they can be embedded and used.",
+    "relevant_sources": ["sample.txt", "chunking_strategies.md"]
+  },
+  {
+    "id": 4,
+    "question": "What two generation quality metrics are used to evaluate a RAG system's answers?",
+    "expected_answer": "Faithfulness, which measures whether the answer is supported by retrieved context, and relevance, which measures whether the answer addresses the user's question.",
+    "relevant_sources": ["sample.txt", "faithfulness_and_hallucination.md"]
+  },
+  {
+    "id": 5,
+    "question": "Who developed FAISS, and what index type performs exact inner-product search?",
+    "expected_answer": "FAISS was developed by Meta AI. IndexFlatIP performs an exact search using inner product, equivalent to cosine similarity for normalized vectors.",
+    "relevant_sources": ["sample.txt", "vector_search.md"]
+  },
+  {
+    "id": 6,
+    "question": "What are fixed-size chunking's main drawbacks?",
+    "expected_answer": "It frequently cuts sentences or paragraphs in half, which hurts embedding quality and the readability of the context passed to the language model.",
+    "relevant_sources": ["chunking_strategies.md"]
+  },
+  {
+    "id": 7,
+    "question": "How does recursive character splitting differ from fixed-size chunking?",
+    "expected_answer": "It tries larger separators first, like paragraph and sentence breaks, and only falls back to smaller separators when a chunk is still too large, preserving natural boundaries more often than naive fixed-size splitting.",
+    "relevant_sources": ["chunking_strategies.md"]
+  },
+  {
+    "id": 8,
+    "question": "How does semantic chunking decide where to start a new chunk?",
+    "expected_answer": "It embeds individual sentences and groups adjacent sentences together while their embedding similarity stays above a threshold; when similarity drops below the threshold, a new chunk begins.",
+    "relevant_sources": ["chunking_strategies.md"]
+  },
+  {
+    "id": 9,
+    "question": "What is the trade-off between very small and very large chunk sizes?",
+    "expected_answer": "Small chunks retrieve precisely but may lack surrounding context, while large chunks carry more context but dilute the embedding and increase the chance of irrelevant text being retrieved.",
+    "relevant_sources": ["chunking_strategies.md"]
+  },
+  {
+    "id": 10,
+    "question": "What does overlap between chunks help recover?",
+    "expected_answer": "Overlap helps recover information that would otherwise be split across a chunk boundary, at the cost of some duplicated content in the index.",
+    "relevant_sources": ["chunking_strategies.md"]
+  },
+  {
+    "id": 11,
+    "question": "How is closeness between vectors typically measured in dense retrieval?",
+    "expected_answer": "With cosine similarity or inner product; when embeddings are normalized to unit length, these two measures rank results identically.",
+    "relevant_sources": ["vector_search.md"]
+  },
+  {
+    "id": 12,
+    "question": "What is the difference between FAISS's IndexFlatIP and approximate indexes like IVF or HNSW?",
+    "expected_answer": "IndexFlatIP performs exact brute-force search comparing the query against every stored vector, which is accurate but scales linearly. IVF and HNSW are approximate indexes that cluster vectors or build a graph structure to trade a small amount of recall for much faster search on large collections.",
+    "relevant_sources": ["vector_search.md"]
+  },
+  {
+    "id": 13,
+    "question": "What is dense retrieval's biggest weakness?",
+    "expected_answer": "It can miss chunks that share an exact rare term, such as a product code, acronym, or proper noun, with the query but are not semantically close in the embedding space.",
+    "relevant_sources": ["vector_search.md", "hybrid_retrieval.md"]
+  },
+  {
+    "id": 14,
+    "question": "What does BM25 score documents by?",
+    "expected_answer": "BM25 scores documents by term frequency and inverse document frequency, rewarding documents that contain the query's exact words, especially rare ones.",
+    "relevant_sources": ["hybrid_retrieval.md"]
+  },
+  {
+    "id": 15,
+    "question": "How does Reciprocal Rank Fusion (RRF) combine dense and keyword search results?",
+    "expected_answer": "For each result, RRF computes a score of 1 divided by a constant k (often 60) plus its rank in a given list, and sums this across every list the result appeared in, so results ranking highly in both lists get the highest fused score.",
+    "relevant_sources": ["hybrid_retrieval.md"]
+  },
+  {
+    "id": 16,
+    "question": "Why does RRF not require normalizing scores between dense and BM25 search?",
+    "expected_answer": "Because RRF only uses each result's rank position rather than its raw score, so it doesn't matter that dense cosine scores and BM25 scores live on different numeric scales.",
+    "relevant_sources": ["hybrid_retrieval.md"]
+  },
+  {
+    "id": 17,
+    "question": "How is a cross-encoder reranker different from a bi-encoder embedding model?",
+    "expected_answer": "A cross-encoder takes the query and a candidate passage together as a single input and outputs a relevance score directly, modeling fine-grained interactions, whereas a bi-encoder encodes the query and passage independently and cannot be precomputed as easily for pairwise scoring.",
+    "relevant_sources": ["hybrid_retrieval.md"]
+  },
+  {
+    "id": 18,
+    "question": "Why are cross-encoder rerankers only applied to a small shortlist of candidates?",
+    "expected_answer": "Because cross-encoders are expensive to run since they must score every query-passage pair at request time and cannot be precomputed, so they are used only on the top 10-50 fused candidates rather than the whole corpus.",
+    "relevant_sources": ["hybrid_retrieval.md"]
+  },
+  {
+    "id": 19,
+    "question": "What does faithfulness measure in a generated RAG answer?",
+    "expected_answer": "Faithfulness measures whether the claims made in a generated answer are actually supported by the retrieved context, rather than drawn from the model's training data.",
+    "relevant_sources": ["faithfulness_and_hallucination.md"]
+  },
+  {
+    "id": 20,
+    "question": "How is hallucination rate typically computed?",
+    "expected_answer": "As the fraction of evaluated answers that contain at least one specific factual claim that cannot be traced back to any retrieved chunk.",
+    "relevant_sources": ["faithfulness_and_hallucination.md"]
+  },
+  {
+    "id": 21,
+    "question": "What is a simple proxy metric for answer relevance?",
+    "expected_answer": "The cosine similarity between the embedding of the original question and the embedding of the generated answer; low similarity often indicates the answer drifted off-topic.",
+    "relevant_sources": ["faithfulness_and_hallucination.md"]
+  },
+  {
+    "id": 22,
+    "question": "Can a RAG system have good retrieval metrics but still generate poor answers?",
+    "expected_answer": "Yes, a system can have excellent retrieval precision and recall and still generate answers that misrepresent or ignore the retrieved context, which is why faithfulness and relevance are measured separately from retrieval quality.",
+    "relevant_sources": ["faithfulness_and_hallucination.md"]
+  },
+  {
+    "id": 23,
+    "question": "How is precision at k calculated for a retriever?",
+    "expected_answer": "Precision at k is the fraction of the top k retrieved results that are actually relevant to the question.",
+    "relevant_sources": ["retrieval_metrics.md"]
+  },
+  {
+    "id": 24,
+    "question": "How is recall at k calculated for a retriever?",
+    "expected_answer": "Recall at k is the fraction of all relevant chunks for a question that were captured within the top k retrieved results.",
+    "relevant_sources": ["retrieval_metrics.md"]
+  },
+  {
+    "id": 25,
+    "question": "What does Mean Reciprocal Rank (MRR) measure?",
+    "expected_answer": "MRR measures how quickly the first relevant result appears, averaging the reciprocal of the rank of the first relevant result across all evaluated questions.",
+    "relevant_sources": ["retrieval_metrics.md"]
+  },
+  {
+    "id": 26,
+    "question": "Why are precision, recall, and MRR considered complementary rather than redundant?",
+    "expected_answer": "Because a retriever tuned purely for precision might miss relevant chunks (hurting recall), while one tuned purely for recall might dilute precision, so evaluating all three together shows whether a change actually improved the retriever.",
+    "relevant_sources": ["retrieval_metrics.md"]
+  },
+  {
+    "id": 27,
+    "question": "What embedding models does a typical RAG pipeline use to convert chunks into vectors?",
+    "expected_answer": "Models such as Sentence-BERT or OpenAI's embedding API are used to convert each chunk into a vector embedding.",
+    "relevant_sources": ["sample.txt"]
+  }
+]
