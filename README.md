@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RAG Evaluation Platform
 
 A retrieval-augmented generation (RAG) system built specifically to be
@@ -287,3 +288,6 @@ What has **not** been run: anything against the real OpenAI API (the
 local-model numbers above — the account available during development had
 no billing quota), and `docker compose build`/`up` (Docker was not
 installed in this environment).
+=======
+# RAG-Evaluation-Platform
+>>>>>>> 86f678698444548f7dd25764aa4ff54051030516
